@@ -6,6 +6,7 @@ import PhotoList from './pages/PhotoList.vue'
 import Login from './pages/Login.vue'
 import PhotoDetail from './pages/PhotoDetail.vue'
 import store from './store'
+import NotFound from './pages/errors/NotFound.vue'
 import SystemError from './pages/errors/System.vue'
 
 // VueRouterプラグインを使用する
@@ -16,7 +17,11 @@ Vue.use(VueRouter)
 const routes = [
     {
         path: '/',
-        component: PhotoList
+        component: PhotoList,
+        props: route => {
+            const page = route.query.page
+            return { page: /^[1-9][0-9]*$/.test(page) ? page * 1 : 1 }
+        }
     },
     {
         path: '/login',
@@ -31,7 +36,12 @@ const routes = [
     },
     {
         path: '/photos/:id',
-        component: PhotoDetail
+        component: PhotoDetail,
+        props: true
+    },
+    {
+        path: '*',
+        component: NotFound
     },
     {
         path: '/500',
@@ -42,6 +52,9 @@ const routes = [
 // VueRouterインスタンスを作成する
 const router = new VueRouter({
     mode: 'history', // ★ 追加
+    scrollBehavior () {
+        return { x: 0, y: 0 }
+    },
     routes
 })
 
